@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MINI SE Charge Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0a;--card:#161616;--surface:#111;--acc:#c8f025;--acc2:#25f0a0;--txt:#f0f0f0;--muted:#666;--bdr:#222;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--txt);font-family:'Barlow',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background-image:radial-gradient(ellipse at 20% 50%,#1a2a0a 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,#0a1a20 0%,transparent 50%);}
+.wrap{width:100%;max-width:420px;}
+.logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--acc);margin-bottom:8px;}
+h1{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:42px;line-height:.95;text-transform:uppercase;letter-spacing:-1px;margin-bottom:10px;}
+h1 em{font-style:normal;color:var(--acc);}
+.sub{font-size:13px;color:var(--muted);margin-bottom:10px;}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px;}
+.badge{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);background:var(--surface);border:1px solid var(--bdr);border-radius:20px;padding:4px 10px;}
+.card{background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:28px;margin-bottom:16px;}
+.field-label{display:flex;justify-content:space-between;align-items:baseline;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.field-label .v{font-size:22px;font-weight:700;letter-spacing:-.5px;}
+input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:2px;outline:none;cursor:pointer;margin-bottom:6px;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--txt);cursor:pointer;}
+.ticks{display:flex;justify-content:space-between;}
+.tick{font-size:10px;color:#333;}
+.sep{height:1px;background:var(--bdr);margin:20px 0;}
+.result{background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:28px;position:relative;overflow:hidden;transition:border-color .3s,box-shadow .3s;}
+.result.ok{border-color:var(--acc);box-shadow:0 0 30px rgba(200,240,37,.08);}
+.result.bad{border-color:#f04025;box-shadow:0 0 30px rgba(240,64,37,.08);}
+.glow{position:absolute;top:-40px;right:-40px;width:120px;height:120px;pointer-events:none;transition:background .3s;}
+.result.ok .glow{background:radial-gradient(circle,rgba(200,240,37,.15) 0%,transparent 70%);}
+.result.bad .glow{background:radial-gradient(circle,rgba(240,64,37,.15) 0%,transparent 70%);}
+.rl{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.rt{font-family:'Barlow Condensed',sans-serif;font-size:64px;font-weight:900;line-height:1;letter-spacing:-2px;min-height:70px;}
+.result.ok .rt{color:var(--acc);}
+.result.bad .rt{color:#f04025;}
+.wm{font-size:12px;color:#f04025;margin-top:8px;display:none;}
+.result.bad .wm{display:block;}
+.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:16px;}
+.di{background:var(--surface);border-radius:10px;padding:10px 12px;}
+.dl{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.dv{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;}
+.tip{margin-top:16px;padding:14px 16px;background:rgba(200,240,37,.05);border-left:2px solid var(--acc);border-radius:0 8px 8px 0;font-size:12px;color:#888;line-height:1.6;display:none;}
+.tip.show{display:block;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo">LIGHTNING BOLT Home Charging</div>
+  <h1>MINI SE<br><em>Charge</em><br>Calculator</h1>
+  <p class="sub">Built on your real data: 13 kWh added in 2h 06m</p>
+  <div class="badges">
+    <span class="badge">28.9 kWh battery</span>
+    <span class="badge">6.19 kW charge rate</span>
+    <span class="badge">6.75p per kWh</span>
+  </div>
+
+  <div class="card">
+    <div class="field-label">Current charge <span class="v" id="cv" style="color:var(--acc)">62%</span></div>
+    <input type="range" id="cur" min="0" max="100" value="62" style="accent-color:var(--acc)">
+    <div class="ticks"><span class="tick">0%</span><span class="tick">25%</span><span class="tick">50%</span><span class="tick">75%</span><span class="tick">100%</span></div>
+    <div class="sep"></div>
+    <div class="field-label">Target charge <span class="v" id="tv" style="color:var(--acc2)">80%</span></div>
+    <input type="range" id="tar" min="0" max="100" value="80" style="accent-color:var(--acc2)">
+    <div class="ticks"><span class="tick">0%</span><span class="tick">25%</span><span class="tick">50%</span><span class="tick">75%</span><span class="tick">100%</span></div>
+  </div>
+
+  <div class="result" id="res">
+    <div class="glow"></div>
+    <div class="rl">Estimated charge time</div>
+    <div class="rt" id="rt">—</div>
+    <div class="wm">Target must be higher than current charge</div>
+    <div class="grid">
+      <div class="di"><div class="dl">kWh needed</div><div class="dv" id="kw" style="color:var(--acc)">—</div></div>
+      <div class="di"><div class="dl">Range added</div><div class="dv" id="ra" style="color:var(--acc2)">—</div></div>
+      <div class="di"><div class="dl">Est. cost</div><div class="dv" id="co">—</div></div>
+    </div>
+    <div class="tip" id="tip"></div>
+  </div>
+</div>
+<script>
+var BATT=28.9,RATE=13/2.1,PPK=6.75,RNG=118;
+var cur=document.getElementById('cur'),tar=document.getElementById('tar');
+var cv=document.getElementById('cv'),tv=document.getElementById('tv');
+var res=document.getElementById('res'),rt=document.getElementById('rt');
+var kw=document.getElementById('kw'),ra=document.getElementById('ra'),co=document.getElementById('co'),tip=document.getElementById('tip');
+function fmt(h){var hh=Math.floor(h),mm=Math.round((h-hh)*60);if(hh===0)return mm+'<span style="font-size:24px;color:#666">min</span>';if(mm===0)return hh+'<span style="font-size:24px;color:#666">h</span>';return hh+'h <span style="font-size:36px;font-weight:600">'+('0'+mm).slice(-2)+'m</span>';}
+function calc(){
+  var c=+cur.value,t=+tar.value;
+  cv.textContent=c+'%';tv.textContent=t+'%';
+  if(t<=c){res.className='result bad';rt.innerHTML='—';kw.textContent='—';ra.textContent='—';co.textContent='—';tip.className='tip';return;}
+  res.className='result ok';
+  var pct=t-c,kwh=(pct/100)*BATT,hrs=kwh/RATE,mi=(pct/100)*RNG,cost=(kwh*PPK)/100;
+  rt.innerHTML=fmt(hrs);
+  kw.textContent=kwh.toFixed(1)+' kWh';
+  ra.textContent='~'+Math.round(mi)+' mi';
+  co.textContent='GBP'+cost.toFixed(2);
+  if(t===100){tip.textContent='Tip: Fine before a long journey - just drive soon after reaching 100% rather than leaving it sitting.';tip.className='tip show';}
+  else if(t<=80){tip.textContent='Ideal zone: Staying between 20-80% is best for your 2022 SE battery long-term.';tip.className='tip show';}
+  else if(c<20){tip.textContent='Perfect timing: Below 20% is the ideal point to plug in - great for battery cycles.';tip.className='tip show';}
+  else{tip.className='tip';}
+}
+cur.addEventListener('input',calc);tar.addEventListener('input',calc);calc();
+</script>
+</body>
+</html>
